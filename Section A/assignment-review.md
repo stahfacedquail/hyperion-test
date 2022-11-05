@@ -1,6 +1,6 @@
 # Code review: Python task
 ## Overall feedback
-This is a very good solution!  It is quite close to solving the problem that was presented, so well done for the strides you have taken so far.  It is especially impressive as it only takes one loop through the array of the strings to group the anagrams, where a more simplistic solution could easily have reached a time complexity of _O(n^2^)_.
+This is a very good solution!  It is quite close to solving the problem that was presented, so well done for the strides you have taken so far.  It is especially impressive as it only takes one loop through the array of the strings to group the anagrams, where a more simplistic solution could easily have reached a time complexity of _O(n²)_.
 
 There are just three issues I would like for us to address.
 
