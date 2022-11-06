@@ -18,3 +18,6 @@ To run the test suite:
 ```
 npm run test
 ```
+
+## Big-O space complexity
+The space complexity for this algorithm is _O(n)_ because the main things that take up more/less space depending on the size of the input number are the two arrays that store information about the "triplet digits" that make up that number, e.g. for the number 12 583 102 102 001, there will be this array `\[\[12\], \[583\], \[102\], \[102\], \[1\]\]` and this array `\[\["twelve trillion"\], \["five hundred and eighty three billion"\], \["one hundred and two million"\], \["one hundred and two thousand"\], \["one"\]\]`.
