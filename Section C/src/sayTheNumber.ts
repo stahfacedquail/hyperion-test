@@ -14,40 +14,53 @@ const dictionary: {[key: number]: string} = {
  * @param num Any integer from 0 up to and including 999 999 999 999 999
  * @returns How the number would be said in English
  */
-function sayNumber(num: number): string {
-	const groups = splitNumber(num);
+export function sayTheNumber(num: number): string {
+  if (typeof num !== "number") {
+    throw new Error("Input must be a number");
+  }
+  if (num < 0 || num >= Math.pow(10, 15) || Number.isInteger(num)) {
+    throw new Error("Input must be an integer between 0 and 999 999 999 999 999");
+  }
+
+	const numberGroups = splitNumber(num);
   // wordGroups will store the English phrase for each group of numbers
   const wordGroups: string[] = [];
-  for (let i = 0; i < groups.length; i++) {
+  for (let i = 0; i < numberGroups.length; i++) {
     // only add the phrase to wordGroups if it's not just going to be "zero"
-    if (groups[i] > 0) {
-      const word = sayNumberHelper(groups[i]);
+    if (numberGroups[i] > 0) {
+      const word = sayNumberHelper(numberGroups[i]);
       // by spec, the longest groups.length will be is 5
       // so the possible values of exponent are 0, 3, 6, 9 and 12
-      const exponent = 3 * (groups.length - (i + 1));
+      const exponent = 3 * (numberGroups.length - (i + 1));
       const suffix = getSuffix(exponent); // e.g. "thousand", "million"
 
       wordGroups.push(suffix ? `${word} ${suffix}` : word);
-    } else if (groups.length === 1) { // however, if 0 IS the full number, then put it in there!
+    } else if (numberGroups.length === 1) { // however, if 0 IS the full number, then put it in there!
       wordGroups.push(
         sayNumberHelper(0),
       );
     }
   }
 	
-  let fullWord: string;
-  // Special case: If wordGroups looks like ["ninety one thousand", "twelve"],
-  // return "ninety one thousand and twelve", not "ninety one thousand, twelve"
-  if (wordGroups.length === 2 && groups[1] < 100) {
-    fullWord = wordGroups.join(" and ");
-  } else {
-    // Otherwise, just return the word groups comma-separated, e.g.
-    // ["five hundred and sixty two thousand", "four hundred and forty four"] translates
-    // to "five hundred and sixty two thousand, four hundred and forty four"
-    fullWord = wordGroups.join(", ")
+  // Special case: If wordGroups looks like ["four million", "ninety one thousand", "twelve"],
+  // return "four million, ninety one thousand and twelve", not "four million, ninety one thousand, twelve"
+  const lastNumberGroup = numberGroups[numberGroups.length - 1];
+  if (wordGroups.length > 1 &&  lastNumberGroup < 100 && lastNumberGroup > 0) {
+    const l = wordGroups.length - 1;
+    // If there's just two groups, normalPart will be empty.  But if there's more than that,
+    // normalPart will comprise all the groups that can just be comma-separated
+    const normalPart = wordGroups.slice(0, l - 1);
+    // If normalPart is something like ["one hundred thousand", "one thousand"], we want there to
+    // be a comma after "one thousand" too, so we add an empty string to normalPart in order to ensure that
+    if (normalPart.length > 0) normalPart.push("");
+    const unusualPart = wordGroups.slice(l - 1).join(" and ");
+    return normalPart.join(", ") + unusualPart;
   }
 
-	return fullWord;
+  // Otherwise, just return the word groups comma-separated, e.g.
+  // ["five hundred and sixty two thousand", "four hundred and forty four"] translates
+  // to "five hundred and sixty two thousand, four hundred and forty four"
+  return wordGroups.join(", ")
 }
 
 /**
@@ -102,10 +115,6 @@ function splitNumber(num: number): number[] {
  * @returns How num would be said in English
  */
 function sayNumberHelper(num: number): string {
-  if (num >= 1000) {
-    throw new Error("This function only accepts integers from 0 to 999");
-  }
-
   // 0 <= n < 20: Numbers with special names, so we look them up in the dictionary
   if (num < 20) {
     return dictionary[num];
@@ -135,4 +144,6 @@ function sayNumberHelper(num: number): string {
     const remainderWord = sayNumberHelper(remainder);
     return `${hundredsWord} and ${remainderWord}`;
   }
+
+  throw new Error("This function only accepts integers from 0 to 999");
 }
