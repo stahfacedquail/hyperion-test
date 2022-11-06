@@ -18,7 +18,10 @@ export function sayTheNumber(num: number): string {
   if (typeof num !== "number") {
     throw new Error("Input must be a number");
   }
-  if (num < 0 || num >= Math.pow(10, 15) || Number.isInteger(num)) {
+  if (!Number.isInteger(num)) {
+    throw new Error("Input must be an integer");
+  }
+  if (num < 0 || num >= Math.pow(10, 15)) {
     throw new Error("Input must be an integer between 0 and 999 999 999 999 999");
   }
 

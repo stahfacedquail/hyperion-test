@@ -29,10 +29,23 @@ describe("sayTheNumber function", () => {
   });
 
   describe("(with invalid inputs)", () => {
+    const errorValues = [
+      { "input": "1234567", "message": "Input must be a number" },
+      { "input": -45, "message": "Input must be an integer between 0 and 999 999 999 999 999" },
+      { "input": Math.pow(10, 15), "message": "Input must be an integer between 0 and 999 999 999 999 999" },
+      { "input": 658.129, "message": "Input must be an integer" },
+    ];
 
+    errorValues.forEach(({ input, message: errorMessage }) => {
+      it(`should throw an error for an input ${input} (type "${typeof input}")`, () => {
+        try {
+          sayTheNumber(input as number);
+        } catch(e: any) {
+          expect(e.message).to.equal(errorMessage);
+        }
+      });
+    });
   });
-  // const errorValues = [-45, 1000000000000, 532.9863];
-  // errorValues.forEach
 });
 
 function outputSpaceSeparated(n: number): string {
