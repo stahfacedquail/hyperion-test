@@ -11,7 +11,7 @@ and then
 ```
 npm run start
 ```
-which will set up an HTTP server that lets you access the program on 127.0.0.1:8080 \\(",)/
+which will set up an HTTP server that lets you access the program on `127.0.0.1:8080` \\(",)/
 
 ## Tests
 To run the test suite:
