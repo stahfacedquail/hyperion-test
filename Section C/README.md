@@ -12,9 +12,10 @@ and then
 npm run start
 ```
 which will set up an HTTP server...
-<div><img src="./images/server-running.png" alt="HTTP server successfully running" width=100 /></div>
+<br><img src="./images/server-running.png" alt="HTTP server successfully running" width=300 /><br>
+
 ... that lets you access the program on `127.0.0.1:8080` \\(",)/
-<div><img src="./images/browser.png" alt="Accessing the program through your browser" width=100 /></div>
+<br><img src="./images/browser.png" alt="Accessing the program through your browser" width=300 /><br>
 
 ## Tests
 To run the test suite:
