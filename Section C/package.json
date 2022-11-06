@@ -1,0 +1,22 @@
+{
+  "name": "say-the-number",
+  "version": "1.0.0",
+  "description": "A program that translates a number into how it would be said in English",
+  "main": "sayTheNumber.ts",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stahfacedquail/hyperion-test.git"
+  },
+  "author": "tami Maiwashe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stahfacedquail/hyperion-test/issues"
+  },
+  "homepage": "https://github.com/stahfacedquail/hyperion-test#readme",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}
