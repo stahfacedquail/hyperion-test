@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Say a number!</title>
+</head>
+<body>
+  <h1>How to say a number</h1>
+  <input id="inputNumber" placeholder="Type a number here..." />
+  <button id="submitBtn">How do I say it?</button>
+  <p id="result"></p>
+  <p id="error"></p>
+
+  <script>var exports = {};</script>
+  <script src="sayTheNumber.js"></script>
+  <script>
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const resultElem = document.getElementById("result");
+      const errorElem = document.getElementById("error");
+
+      resultElem.innerHTML = null;
+      errorElem.innerHTML = null;
+
+      try {
+        const inputNum = parseFloat(document.getElementById("inputNumber").value);
+        const result = sayTheNumber(inputNum);
+        resultElem.innerHTML = result;
+      } catch(ex) {
+        errorElem.innerHTML = ex.message;
+      }
+    });
+  </script>
+</body>
+</html>
