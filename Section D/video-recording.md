@@ -1,0 +1,1 @@
+Please find my video recording answering the questions about my work experience and how I cope with power and connectivity outages on this link: https://www.loom.com/share/a0cbbfd9d3ab49f4bfe1c56e1bda085c
