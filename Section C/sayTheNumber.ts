@@ -9,85 +9,130 @@ const dictionary: {[key: number]: string} = {
 	1000000000: "billion", 1000000000000: "trillion"
 };
 
+/**
+ * Translates a number to how it would be said in English
+ * @param num Any integer from 0 up to and including 999 999 999 999 999
+ * @returns How the number would be said in English
+ */
 function sayNumber(num: number): string {
-	let isNegative = false;
-	
-	if (num < 0) {
-		isNegative = true;
-		num *= -1;
-	}
-	
 	const groups = splitNumber(num);
+  // wordGroups will store the English phrase for each group of numbers
   const wordGroups: string[] = [];
   for (let i = 0; i < groups.length; i++) {
+    // only add the phrase to wordGroups if it's not just going to be "zero"
     if (groups[i] > 0) {
       const word = sayNumberHelper(groups[i]);
+      // by spec, the longest groups.length will be is 5
+      // so the possible values of exponent are 0, 3, 6, 9 and 12
       const exponent = 3 * (groups.length - (i + 1));
-      const suffix = generateSuffix(exponent);
+      const suffix = getSuffix(exponent); // e.g. "thousand", "million"
 
       wordGroups.push(suffix ? `${word} ${suffix}` : word);
+    } else if (groups.length === 1) { // however, if 0 IS the full number, then put it in there!
+      wordGroups.push(
+        sayNumberHelper(0),
+      );
     }
   }
 	
   let fullWord: string;
+  // Special case: If wordGroups looks like ["ninety one thousand", "twelve"],
+  // return "ninety one thousand and twelve", not "ninety one thousand, twelve"
   if (wordGroups.length === 2 && groups[1] < 100) {
     fullWord = wordGroups.join(" and ");
   } else {
+    // Otherwise, just return the word groups comma-separated, e.g.
+    // ["five hundred and sixty two thousand", "four hundred and forty four"] translates
+    // to "five hundred and sixty two thousand, four hundred and forty four"
     fullWord = wordGroups.join(", ")
   }
 
-	return isNegative ? `negative ${fullWord}` : fullWord;
+	return fullWord;
 }
 
-function generateSuffix(exponent: number): string {
+/**
+ * Get the suffix associated with a particular power of 10, e.g. 10 ** 3 returns "thousand",
+ * 10 ** 12 returns "trillion".
+ * @param exponent The exponent to which 10 must be raised
+ * @returns The suffix for that power of 10, if it is available in the dictionary; otherwise
+ * it returns an empty string
+ */
+function getSuffix(exponent: number): string {
+  // Special case: As much as 10 ** 0 is in the dictionary, we never use "one"
+  // as a suffix for a number
   if (exponent === 0) return "";
 
   const powerOf10 = Math.pow(10, exponent);
-  if (powerOf10 in dictionary) return dictionary[powerOf10];
-
-  return "";
+  return dictionary[powerOf10] ?? "";
 }
 
-function splitNumber(number: number): number[] {
-  const numStr = `${number}`;
+/**
+ * Split a number into groups of three, counting from the "end" of that number
+ * @param number A non-negative integer
+ * @returns e.g. for an input 5 761 848 284, an array [[5], [761], [848], [284]]
+ * would be returned
+ */
+function splitNumber(num: number): number[] {
+  const numStr = `${num}`;
+  // remainder will help us figure out if the first group is shorter than 3 digits
   const remainder = numStr.length % 3;
-  const groups = remainder ? [ numStr.substring(0, remainder) ] : [];
+  // If remainder is 1 or 2, the first element in groups must just be the first one or
+  // two digits respectively; otherwise we can just create an empty array and populate all
+  // of it using the loop
+  const groups = remainder > 0
+    ? [ parseInt(numStr.substring(0, remainder), 10) ]
+    : [];
+  // Start looping after the first one / two digits if remainder was 1 or 2;
+  // otherwise start looping from the very first digit
   for (let i = remainder; i < numStr.length; i += 3) {
-    groups.push(numStr.substring(i, i + 3));
+    // Each time, grab the next three characters and put them into the groups array
+    const groupStr = numStr.substring(i, i + 3);
+    groups.push(
+      parseInt(groupStr, 10),
+    );
   }
     
-  return groups.map((group) => parseInt(group));
+  return groups;
 }
 
-// number n must be such that 0 <= n < 1000
-function sayNumberHelper(n: number): string {
-  // 0 <= n < 20
-  if (n < 20) {
-    return dictionary[n];
+/**
+ * Translates a number into how it would be said in English, focusing specifically on
+ * numbers smaller than 1000
+ * @param num Any number from 0 up to and including 999
+ * @returns How num would be said in English
+ */
+function sayNumberHelper(num: number): string {
+  if (num >= 1000) {
+    throw new Error("This function only accepts integers from 0 to 999");
+  }
+
+  // 0 <= n < 20: Numbers with special names, so we look them up in the dictionary
+  if (num < 20) {
+    return dictionary[num];
   }
   
-  // 20 <= n < 100
-  if (n < 100) {
-    const tens = Math.floor(n / 10);
+  // 20 <= n < 100: The tens part of these numbers have special names too, which we
+  // look up in the dictionary
+  if (num < 100) {
+    const tens = Math.floor(num / 10); // some number between 2 and 9
     const tensWord = dictionary[tens * 10];
 
-    const units = n % 10;
-    if (units === 0) return tensWord;
+    const units = num % 10; // some number between 0 and 9
+    if (units === 0) return tensWord; // e.g. just return "ninety", not "ninety zero"
     
-    const unitsWord = dictionary[units];
+    const unitsWord = dictionary[units]; // numbers between 0 and 9 have special names
     return `${tensWord} ${unitsWord}`;
   }
   
-  // 100 <= n < 1000
-  if (n < 1000) {
-    const hundreds = Math.floor(n / 100);
-    const hundredsWord = `${dictionary[hundreds]} hundred`;
-    const remainder = n % 100;
-    if (remainder === 0) return hundredsWord;
+  // 100 <= n < 1000: We need to specify how to say the "hundreds" part of this number,
+  // and then we can use the logic above to say the remaining part of the number
+  if (num < 1000) {
+    const hundreds = Math.floor(num / 100); // some number between 1 and 9
+    const hundredsWord = `${dictionary[hundreds]} hundred`; // e.g. "three hundred"
+    const remainder = num % 100; // the "remaining part of the number", e.g. the 23 in 123
+    if (remainder === 0) return hundredsWord; // e.g. return "five hundred", not "five hundred and zero"
     
     const remainderWord = sayNumberHelper(remainder);
     return `${hundredsWord} and ${remainderWord}`;
   }
-
-  return "";
 }
